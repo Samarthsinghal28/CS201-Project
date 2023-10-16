@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+
 struct node{
     struct node* left;
     int data;
@@ -8,8 +9,11 @@ struct node{
     char color;
     struct node* parent;
 };
+struct rbt{
+    struct node* root;
+	int numberOfProcess;
+};
 
-struct node* root = NULL;
 
 void new_node(struct node* decide, int key){
     decide = (struct node*)malloc(sizeof(struct node));
