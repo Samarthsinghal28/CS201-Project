@@ -12,7 +12,7 @@ struct node{
 struct node* root = NULL;
 
 void new_node(struct node* decide, int key){
-    decide = malloc(sizeof(struct node));
+    decide = (struct node*)malloc(sizeof(struct node));
     decide->left = NULL;
     decide->right = NULL;
     decide->data = key;
