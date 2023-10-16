@@ -4,8 +4,7 @@
             "name": "windows-gcc-x86",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}",
-                "C:\\Users\\lenovo\\Documents\\GitHub\\CS201-PROJECT"
+                "${workspaceFolder}"
             ],
             "compilerPath": "C:/MinGW/bin/gcc.exe",
             "cStandard": "${default}",
