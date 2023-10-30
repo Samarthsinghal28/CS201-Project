@@ -16,14 +16,14 @@ typedef struct rb_tree{
 	int size;
 }rb_tree;
 
-rb_node* create_node(int data){
+rb_node* create_node(int value,task* cur_task ){
 	rb_node* node = malloc(sizeof(rb_node));
 	node->color = 'R';
 	node->right = NULL;
 	node->left = NULL;
 	node->parent = NULL;
-	node->data = data;
-	node->mytask = create_task();
+	node->data = value;
+	node->mytask = cur_task;
 	return node;
 }
 
@@ -478,7 +478,7 @@ rb_node* restructure(rb_tree* tree, rb_node* root){
 					root = NULL;
 				}
 				else{
-					temp = create_node(0);
+					temp = create_node(0,NULL);       //check i have added NULL
 					temp->parent = root->parent;
 					
 					if (root->parent->left == root){

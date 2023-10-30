@@ -3,7 +3,7 @@
 
 typedef struct task{
 	char name[15];
-	int burst_time;
-	int vruntime;
+	float burst_time;
+	float vruntime;
 	int nice_value;
 }task;
