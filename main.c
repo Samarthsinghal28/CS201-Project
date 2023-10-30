@@ -30,6 +30,8 @@ void changePriority(){
 }
 
 
+
+
 void run(int n){
     switch(n){
         case 1: addNewProcess();

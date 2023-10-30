@@ -15,5 +15,4 @@ void afterReadingFile(){
     printf("3)Run the processes according to scheduler for N Quantum time(user input) and show the remaining time of processes.\n");
     printf("4)Change priorty of a process\n");
     printf("5)Exit.\n");
-
 }
