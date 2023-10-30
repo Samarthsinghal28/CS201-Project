@@ -9,7 +9,7 @@ typedef struct task{
 	int nice_value;
 }task;
 
-task * input(){
+task* input(){
 	int n;
 	printf("Enter the number of tasks: ");
 	scanf(" %d",&n);
