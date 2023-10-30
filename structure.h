@@ -3,9 +3,9 @@
 #define SIZE_NAME 10
 
 typedef struct task{
-	char name[SIZE_NAME];
-	int burst_time;
-	int vruntime;
+	char name[15];
+	float burst_time;
+	float vruntime;
 	int nice_value;
 }task;
 
