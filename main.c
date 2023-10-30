@@ -2,8 +2,12 @@
 #include <menu.h>
 #include <structure.h>
 #include <redblack.c>
+#define SIZE_NAME 10
+
 int No_Of_Tasks=0;
 rb_tree* TaskTree;
+task* TaskList;
+
 //Reads the file and returns array of tasks
 task* readFile(){       //also updates the value of global variable No_of_Tasks
     int n;
@@ -21,33 +25,49 @@ task* readFile(){       //also updates the value of global variable No_of_Tasks
 }
 
 
+
+
 //takes input from the user for a new process and enter the process into the existing tree
 void addNewProcess(){
     int n;
-    printf("Enter the number of tasks to be entered: ");
-    scanf(" %d",&n);
-    task **arr= (task**)malloc(sizeof(task*));
+	printf("Enter the number of tasks to be entered: ");
+	scanf(" %d",&n);
+    No_Of_Tasks +=n;
+	TaskList= (task**)realloc(TaskList, No_Of_Tasks*sizeof(task*));
 
-    for(int i=0;i<n;++i){
-        printf("Enter the name of the task: ");
-        fgets(arr[i]->name, SIZE_NAME, stdin);
-        printf("Enter the Burst time of %s: ",arr[i]->name);
-        scanf(" %d", arr[i]->burst_time);
-        printf("Enter the nice value of %s", arr[i]->name);
-        scanf(" %d",arr[i]->nice_value);
-    }
+	for(int i=No_Of_Tasks-n-1;i<No_Of_Tasks;++i){
+		printf("Enter the name of the task: ");
+		fgets(TaskList[i].name, SIZE_NAME, stdin);
+		printf("Enter the Burst time of %s: ",TaskList[i].name);
+		scanf(" %d", TaskList[i].burst_time);
+		printf("Enter the nice value of %s", TaskList[i].name);
+		scanf(" %d",TaskList[i].nice_value);
+	}
 
-    for(int i =0;i<n;++i){
-        int preference = arr[i]->nice_value + arr[i]->burst_time;//change this logic *********************************
-        create_node(preference, *(arr+i));
+    for(int i =No_Of_Tasks-n-1;i<No_Of_Tasks;++i){
+        int preference = TaskList[i].nice_value + TaskList[i].burst_time;//change this logic *********************************
+        create_node(preference, TaskList+i);
     }   
-    
+	
 }
+
+
 
 //takes task name of input from the user and deletes the process from the Tasktree. Uses TaskList and the defined expression for initial preference to find the task
 void deleteProcess(){
     char delName[15];
+    int same;
+    printf("Enter the name of the process to be deleted: ");
     fgets(delName, SIZE_NAME, stdin);
+    for(int i=0;i<No_Of_Tasks;++i){
+        same = strcmp(TaskList[i].name, delName);
+        if(same == 0) break;
+    }
+    if(same == 0){
+        search(TaskTree->root, delName);
+    }else{
+        printf("The entered string is not a valid process.\n");
+    }
 }
 
 //takes input from the user that for how many nanoseconds processes should run and then prints the burstTime left for each process. Each nanosecond is divided into Quantas equal to number of processes.
@@ -56,29 +76,7 @@ void runProcesses(){
     printf("Enter for how many nanoseconds processes should run : ");
     scanf("%d",&x);
     for(int i=0;i<x;i++){
-        rb_node* cur_process=minValueNode(TaskTree);
-        delete(TaskTree,TaskTree->root,cur_process->data);
-        if(cur_process->mytask->nice_value==-1){
-            cur_process->data=cur_process->data+7;
-            cur_process->mytask->vruntime++;
-            if(cur_process->mytask->vruntime!=cur_process->mytask->burst_time){
-                insert(TaskTree,cur_process);
-            }
-        }
-        else if(cur_process->mytask->nice_value==0){
-            cur_process->data=cur_process->data+5;
-            cur_process->mytask->vruntime++;
-            if(cur_process->mytask->vruntime!=cur_process->mytask->burst_time){
-                insert(TaskTree,cur_process);
-            }
-}
-        else{
-            cur_process->data=cur_process->data+3;
-            cur_process->mytask->vruntime++;
-            if(cur_process->mytask->vruntime!=cur_process->mytask->burst_time){
-                insert(TaskTree,cur_process);
-            }
-        }
+        
     }
 }
 
@@ -86,6 +84,7 @@ void runProcesses(){
 void changePriority(){
 
 }
+
 
 void run(int n){
     switch(n){
@@ -102,12 +101,11 @@ void run(int n){
 
 void main(){
     char* file_name=start();
-    
-    task** TaskList=readFile();
     TaskTree=create_tree();
-
+    TaskList = readFile();
+    
     for(int i=0;i<No_Of_Tasks;i++){
-        int initial_preference = TaskList[i]->nice_value + TaskList[i]->burst_time; //Defining an expression
+        int initial_preference = TaskList[i].nice_value + TaskList[i].burst_time; //Defining an expression
         rb_node* node=create_node(initial_preference,TaskList+i);
         insert(TaskTree,node);
     }

@@ -580,5 +580,14 @@ rb_node* delete(rb_tree* tree, rb_node* root, int data){
     return tree->root; 
 }
 
-
+void search(rb_node* root, char *name){
+	if(root == NULL) return;
+	search(root->left, name);
+	int same = strcmp(name, root->mytask->name);
+	if(same == 0) {
+		delete(TaskTree, TaskTree->root, root->data);
+		return;
+	}
+	search(root->right, name);	
+}
 
