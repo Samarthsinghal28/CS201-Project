@@ -23,11 +23,31 @@ task* readFile(){       //also updates the value of global variable No_of_Tasks
 
 //takes input from the user for a new process and enter the process into the existing tree
 void addNewProcess(){
+    int n;
+    printf("Enter the number of tasks to be entered: ");
+    scanf(" %d",&n);
+    task **arr= (task**)malloc(sizeof(task*));
 
+    for(int i=0;i<n;++i){
+        printf("Enter the name of the task: ");
+        fgets(arr[i]->name, SIZE_NAME, stdin);
+        printf("Enter the Burst time of %s: ",arr[i]->name);
+        scanf(" %d", arr[i]->burst_time);
+        printf("Enter the nice value of %s", arr[i]->name);
+        scanf(" %d",arr[i]->nice_value);
+    }
+
+    for(int i =0;i<n;++i){
+        int preference = arr[i]->nice_value + arr[i]->burst_time;//change this logic *********************************
+        create_node(preference, *(arr+i));
+    }   
+    
 }
 
 //takes task name of input from the user and deletes the process from the Tasktree. Uses TaskList and the defined expression for initial preference to find the task
 void deleteProcess(){
+    char delName[15];
+    fgets(delName, SIZE_NAME, stdin);
 }
 
 //takes input from the user that for how many nanoseconds processes should run and then prints the burstTime left for each process. Each nanosecond is divided into Quantas equal to number of processes.
