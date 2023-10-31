@@ -9,6 +9,11 @@ typedef struct task{
 	int nice_value;
 }task;
 
+struct list_node{
+	task* mytask;
+	struct list_node* next;
+};
+
 task* input(){
 	int n;
 	printf("Enter the number of tasks: ");
