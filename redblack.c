@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <structure.h>
-
+#include <string.h>
+struct list_node* TaskList;
 typedef struct rb_node{
 	char color;
 	struct rb_node* right;
@@ -15,7 +16,8 @@ typedef struct rb_tree{
 	rb_node* root;
 	int size;
 }rb_tree;
-
+int No_Of_Tasks=0;
+rb_tree* TaskTree;
 rb_node* create_node(int value,task* cur_task ){
 	rb_node* node = malloc(sizeof(rb_node));
 	node->color = 'R';
@@ -28,10 +30,10 @@ rb_node* create_node(int value,task* cur_task ){
 }
 
 rb_tree* create_tree(){
-	rb_tree* tree = malloc(sizeof(rb_tree));
-	tree->root = NULL;
-	tree->size = 0;
-	return tree;
+	rb_tree* TaskTree = (rb_tree*)malloc(sizeof(rb_tree));
+	TaskTree->root = NULL;
+	TaskTree->size = 0;
+	return TaskTree;
 }
 
 void display(rb_node* root){
@@ -44,6 +46,7 @@ void display(rb_node* root){
 
 rb_node* BSTinsert(rb_node* parent,rb_node* root,rb_node* node){
 	if (root == NULL){
+		printf("Root==NULL\n");
 		root = node;
 		root->color = 'R';
 		root->parent = parent;
@@ -51,17 +54,19 @@ rb_node* BSTinsert(rb_node* parent,rb_node* root,rb_node* node){
 	}
 	
 	else if (node->data>root->data){
+		printf("node->data>root->data\n");
 		root->right = BSTinsert(root,root->right,node);
 	}
 	
 	else if (node->data<root->data){
+		printf("node->data<root->data\n");
 		root->left = BSTinsert(root,root->left,node);
 	}
 
 	return root;
 }
 
-void recolor(rb_tree* tree, rb_node* node){
+void recolor(rb_node* node){
 	rb_node* parent = NULL;
 	rb_node* grandparent = NULL;
 	rb_node* uncle = NULL;
@@ -69,9 +74,9 @@ void recolor(rb_tree* tree, rb_node* node){
 
 	if (node){	
 		// no recoloring if node is root
-		if (node != tree->root){
+		if (node != TaskTree->root){
 			// as there will be no recoloring then
-			if(node->parent != tree->root){
+			if(node->parent != TaskTree->root){
 				// to see if there's a violation
 				if (node->parent->color == 'R'){
 					// initialize parent and grand parent
@@ -96,15 +101,15 @@ void recolor(rb_tree* tree, rb_node* node){
 
 						// perform recoloring for node's grandparent
 						node = grandparent;
-						recolor(tree, node);
+						recolor(node);
 					}
 					
 					// uncle's black
 					else{
 						
 						if((parent->left == node) && (grandparent->left == parent)){
-							if(grandparent == tree->root){
-								tree->root = parent;
+							if(grandparent == TaskTree->root){
+								TaskTree->root = parent;
 							}
 							else if(grandparent == grandparent->parent->left){
 								grandparent->parent->left = parent;
@@ -127,12 +132,12 @@ void recolor(rb_tree* tree, rb_node* node){
 							grandparent->color = temp;
 
 							node = parent;
-							recolor(tree, node);
+							recolor(node);
 						}
 
 						else if((parent->right == node) && (grandparent->left == parent)){
-							if(grandparent == tree->root){
-								tree->root = node;
+							if(grandparent == TaskTree->root){
+								TaskTree->root = node;
 							}
 							else if(grandparent == grandparent->parent->left){
 								grandparent->parent->left = node;
@@ -152,13 +157,13 @@ void recolor(rb_tree* tree, rb_node* node){
 							node->color = grandparent->color;
 							grandparent->color = temp;
 
-							recolor(tree, node);
+							recolor(node);
 						}
 
 						else if((parent->right == node) && (grandparent->right == parent)){
 
-							if(grandparent == tree->root){
-								tree->root = parent;
+							if(grandparent == TaskTree->root){
+								TaskTree->root = parent;
 							}
 							else if(grandparent == grandparent->parent->left){
 								grandparent->parent->left = parent;
@@ -180,12 +185,12 @@ void recolor(rb_tree* tree, rb_node* node){
 							grandparent->color = temp;
 							
 							node = parent;
-							recolor(tree, node);
+							recolor(node);
 						}
 
 						else if((parent->right == node) && (grandparent->left == parent)){
-							if(grandparent == tree->root){
-								tree->root = node;
+							if(grandparent == TaskTree->root){
+								TaskTree->root = node;
 							}
 							else if(grandparent == grandparent->parent->left){
 								grandparent->parent->left = node;
@@ -202,25 +207,27 @@ void recolor(rb_tree* tree, rb_node* node){
 							node->left = grandparent;
 							node->right = parent;
 
-							recolor(tree, node);
+							recolor(node);
 						}
 					}
 				}
 			}
 		}
 	}	
-	tree->root->color = 'B';
+	TaskTree->root->color = 'B';
 }
 
-void insert(rb_tree* tree, rb_node* node){
-	if (tree->root == NULL){
-		tree->root = node;
-		tree->root->color = 'B';
+void insert(rb_node* node){
+	if (TaskTree->root == NULL){
+		TaskTree->root = node;
+		TaskTree->root->color = 'B';
+		TaskTree->size++;
 	}
 
 	else{
-		tree->root = BSTinsert(NULL, tree->root, node);
-		recolor(tree, node);
+		TaskTree->root = BSTinsert(NULL, TaskTree->root, node);
+		TaskTree->size++;
+		recolor(node);
 	}
 } 
 
@@ -247,9 +254,9 @@ rb_node* minValueNode(rb_node* node) {
   
     return current; 
 }
-rb_node* fixDoubleBlack(rb_tree* tree, rb_node* root){
+rb_node* fixDoubleBlack(rb_node* root){
 	rb_node* temp = root;
-	if (root != tree->root){
+	if (root != TaskTree->root){
 		rb_node *sibling, *parent, *r;
 
 		parent = root->parent;
@@ -263,8 +270,8 @@ rb_node* fixDoubleBlack(rb_tree* tree, rb_node* root){
 			
 			sibling->color = 'B';
 			parent->color = 'R';
-			if (parent == tree->root){
-				tree->root = sibling;
+			if (parent == TaskTree->root){
+				TaskTree->root = sibling;
 
 			}
 			else if (parent->parent->left == parent){
@@ -291,7 +298,7 @@ rb_node* fixDoubleBlack(rb_tree* tree, rb_node* root){
 			parent->parent = sibling;
 			temp = NULL;
 
-			tree->root = fixDoubleBlack(tree, root);
+			TaskTree->root = fixDoubleBlack(root);
 
 		}
 
@@ -304,7 +311,7 @@ rb_node* fixDoubleBlack(rb_tree* tree, rb_node* root){
  				
  				else{
  					sibling->color = 'R';
-					tree->root = fixDoubleBlack(tree, parent);
+					TaskTree->root = fixDoubleBlack(parent);
  				}
 			}
 			if((sibling->left != NULL && sibling->left->color == 'R') || (sibling->right != NULL && sibling->right->color == 'R')){
@@ -348,8 +355,8 @@ rb_node* fixDoubleBlack(rb_tree* tree, rb_node* root){
 					parent->color = sibling->color;
 					sibling->color = temp_color;
 					farChild->color = 'B';
-					if (parent == tree->root){
-						tree->root = sibling;
+					if (parent == TaskTree->root){
+						TaskTree->root = sibling;
 					}
 					else if (parent->parent->left == parent){
 						parent->parent->left = sibling;
@@ -372,17 +379,17 @@ rb_node* fixDoubleBlack(rb_tree* tree, rb_node* root){
 						parent->right = nearChild;
 						sibling->left = parent;
 					}
-					display(tree->root);
+					display(TaskTree->root);
 
 				}
 
 			}
 		}
 	}
-	return tree->root;
+	return TaskTree->root;
 }
 
-rb_node* restructure(rb_tree* tree, rb_node* root){
+rb_node* restructure(rb_node* root){
 		rb_node* temp;
 		if ((root->color == 'R') && (root->left == NULL && root->right == NULL)){
 
@@ -426,10 +433,10 @@ rb_node* restructure(rb_tree* tree, rb_node* root){
 
 			rb_node* doubleBlack;
 			if ((root->left) && (root->left->color == 'R')){
-				if(root == tree->root){
-					tree->root = root->left;
+				if(root == TaskTree->root){
+					TaskTree->root = root->left;
 					root->left->parent = root->parent;
-					tree->root->color = 'B';
+					TaskTree->root->color = 'B';
 					free(root);
 					root = NULL;
 				}
@@ -449,10 +456,10 @@ rb_node* restructure(rb_tree* tree, rb_node* root){
 				}
 			}
 			else if ((root->right) && (root->right->color == 'R')){
-				if(root == tree->root){
-					tree->root = root->right;
+				if(root == TaskTree->root){
+					TaskTree->root = root->right;
 					root->right->parent = root->parent;
-					tree->root->color = 'B';
+					TaskTree->root->color = 'B';
 					free(root);
 					root = NULL;
 				}
@@ -472,13 +479,14 @@ rb_node* restructure(rb_tree* tree, rb_node* root){
 				}
 			}
 			else if (root->left == NULL && root->right == NULL){
-				if (root == tree->root){
-					tree->root = NULL;
+				if (root == TaskTree->root){
+					TaskTree->root = NULL;
 					free(root);
 					root = NULL;
 				}
 				else{
 					temp = create_node(0,NULL);       //check i have added NULL
+					//printf("\n\n\n\n\n\n");
 					temp->parent = root->parent;
 					
 					if (root->parent->left == root){
@@ -491,7 +499,7 @@ rb_node* restructure(rb_tree* tree, rb_node* root){
 					free(root);
 					root = NULL;
 					
-					tree->root = fixDoubleBlack(tree, temp);
+					TaskTree->root = fixDoubleBlack(temp);
 
 					if (temp->parent->left == temp){
 					 	temp->parent->left = NULL;
@@ -501,14 +509,14 @@ rb_node* restructure(rb_tree* tree, rb_node* root){
 					}
 					free(temp);
 					temp = NULL;
-					display(tree->root);
+					display(TaskTree->root);
 					printf("\n");
-					printf("tree->root->data: %d\n", tree->root->data);
+					printf("TaskTree->root->data: %d\n", TaskTree->root->data);
 				}
 			}
 			else if (root->left && root->left->color == 'B'){
-				if (root == tree->root){
-					tree->root = root->left;
+				if (root == TaskTree->root){
+					TaskTree->root = root->left;
 					free(root);
 					root = NULL;
 				}
@@ -524,12 +532,12 @@ rb_node* restructure(rb_tree* tree, rb_node* root){
 					}
 					free(root);
 					root = NULL;
-					tree->root = fixDoubleBlack(tree, temp);
+					TaskTree->root = fixDoubleBlack(temp);
 				}
 			}
 			else if(root->right && root->right->color == 'B'){
-				if (root == tree->root){
-					tree->root = root->right;
+				if (root == TaskTree->root){
+					TaskTree->root = root->right;
 					free(root);
 					root = NULL;
 				}
@@ -544,23 +552,23 @@ rb_node* restructure(rb_tree* tree, rb_node* root){
 					}
 					free(root);
 					root = NULL;
-					tree->root = fixDoubleBlack(tree, temp);
+					TaskTree->root = fixDoubleBlack(temp);
 				}
 			}
 
 		}
 		printf("Displaying from end of restructure.\n");
-		display(tree->root);
+		display(TaskTree->root);
 		printf("\n");
-		return tree->root;
+		return TaskTree->root;
 }
 
-rb_node* delete(rb_tree* tree, rb_node* root, int data){
+rb_node* delete(rb_node* root, int data){
     if (root == NULL) return root; 
     if (data < root->data) 
-        delete(tree, root->left, data); 
+        delete(root->left, data); 
     else if (data > root->data) 
-        delete(tree, root->right, data); 
+        delete(root->right, data); 
     else
     { 
         rb_node* temp;
@@ -569,25 +577,32 @@ rb_node* delete(rb_tree* tree, rb_node* root, int data){
         	root->data = temp->data;
   
         	// Delete the inorder successor 
-        	delete(tree, root->right, temp->data);
+        	delete(root->right, temp->data);
 		}
 
 		else{
-			tree->root = restructure(tree, root);
+			TaskTree->root = restructure(root);
 		}
+		TaskTree->size--;
     }
     
-    return tree->root; 
+    return TaskTree->root; 
 }
-
 void search(rb_node* root, char *name){
 	if(root == NULL) return;
 	search(root->left, name);
 	int same = strcmp(name, root->mytask->name);
 	if(same == 0) {
-		delete(TaskTree, TaskTree->root, root->data);
+		delete(TaskTree->root, root->data);
 		return;
 	}
 	search(root->right, name);	
+}
+void printTree(rb_node* root){
+	if(root!=NULL){
+	printTree(root->left);
+	printf("Name=%s  Priority %d  Root Value= %d\n",root->mytask->name,root->data,TaskTree->root->data);
+	printTree(root->right);	
+	}
 }
 

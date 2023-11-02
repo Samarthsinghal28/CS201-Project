@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define SIZE_NAME 10
+#define SIZE_NAME 15
 
-typedef struct task{
+typedef struct taskdef{
 	char name[15];
 	float burst_time;
 	float vruntime;
